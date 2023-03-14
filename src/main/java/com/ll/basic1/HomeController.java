@@ -2,6 +2,7 @@ package com.ll.basic1;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -48,5 +49,14 @@ public class HomeController {
     @ResponseBody
     public int showIncrese() {
         return count++;
+    }
+
+    @GetMapping("/home/plus")
+    @ResponseBody
+    //@RequestParam
+    // 개발자가 스프링 부트에게 말한다.
+    // 생략 가능
+    public int showPlus(@RequestParam(defaultValue = "1") int a, int b) {
+        return a + b;
     }
 }
