@@ -239,5 +239,25 @@ public class HomeController {
 
         return "%d번 사람이 삭제되었습니다.".formatted(id);
     }
+
+    @GetMapping("/home/modifyPerson")
+    @ResponseBody
+    public String modifyPerson(int id, String name, int age) {
+
+        // 사람 있는지 체크
+        Person found = people
+                .stream()
+                .filter(p -> p.getId() == id)
+                .findFirst()
+                .orElse(null); // 없으면 null을 반환해라
+        if (found == null) {
+            return "%d 번이 없습니다".formatted(id);
+        }
+
+        found.setName(name);
+        found.setAge(age);
+
+        return "%d 번이 수정되었습니다".formatted(id);
+    }
 }
 

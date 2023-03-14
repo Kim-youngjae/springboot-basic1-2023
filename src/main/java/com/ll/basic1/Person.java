@@ -2,6 +2,7 @@ package com.ll.basic1;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 @AllArgsConstructor // 안의 멤버변수를 모두 포함한 생성자를 자동으로 생성(롬복)
@@ -10,8 +11,9 @@ import lombok.ToString;
 class Person {
     private static int lastId;
     private int id;
-    @Getter
+    @Setter
     private String name;
+    @Setter
     private int age;
 
     static {
