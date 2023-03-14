@@ -19,11 +19,11 @@ import java.util.Map;
 // 아래 있는 HomeController 는 컨트롤러이다.
 public class HomeController {
     private int id;
-    private List<Person> personList;
+    private List<Person> people;
 
     public HomeController() {
         this.id = 0;
-        personList = new ArrayList<>();
+        people = new ArrayList<>();
     }
 
     // @GetMapping("/home/main") 의 의미
@@ -68,19 +68,6 @@ public class HomeController {
     // 생략 가능
     public int showPlus(@RequestParam(defaultValue = "1") int a, int b) {
         return a + b;
-    }
-
-    @GetMapping("/home/addPerson")
-    @ResponseBody
-    public String showAddPerson(String name, int age) {
-        personList.add(new Person(id++, name, age));
-        return id + "번 사람이 추가되었습니다.";
-    }
-
-    @GetMapping("/home/people")
-    @ResponseBody
-    public List<Person> showPeople() {
-        return personList;
     }
 
     // 다양한 리턴 타입으로 응답해보기
@@ -214,55 +201,43 @@ public class HomeController {
 
         return list;
     }
+
+    @GetMapping("/home/addPerson")
+    @ResponseBody
+    public String addPerson(String name, int age) {
+        Person p = new Person(name, age);
+
+        System.out.println(p);
+
+        people.add(p);
+
+        return "%d번 사람이 추가되었습니다.".formatted(p.getId());
+    }
+
+    @GetMapping("/home/people")
+    @ResponseBody
+    public List<Person> showPeople() {
+        return people;
+    }
+
+    @GetMapping("/home/removePerson")
+    @ResponseBody
+    public String removePerson(int id) {
+        // person -> person.getId() == id
+        // 위 함수가 참인 엘리먼트(요소) 경우가 존재하면, 해당 요소를 삭제한다.
+        // removed 에는 삭제수행여부가 저장된다.
+        // 조건에 맞는걸 찾았고 삭제까지 되었다면 true, 아니면 false
+        boolean removed = people.removeIf(person -> person.getId() == id);
+//        스트림 사용하지 않고 삭제
+//        for ( Person p : people ) {
+//            if ( p.getId() == id ) people.remove(p);
+//        }
+
+        if (removed == false) {
+            return "%d번 사람이 존재하지 않습니다.".formatted(id);
+        }
+
+        return "%d번 사람이 삭제되었습니다.".formatted(id);
+    }
 }
 
-@AllArgsConstructor // 안의 멤버변수를 모두 포함한 생성자를 자동으로 생성(롬복)
-@Getter // 개별적으로 포함 시키고 싶으면 변수에 하나씩 따로 붙이면 된다.
-class Person {
-    private int id;
-    @Getter
-    private String name;
-    private int age;
-}
-
-class Car {
-    private final int id;
-    private final int speed;
-    private final String name;
-    private final List<Integer> relatedIds;
-
-    public Car(int id, int speed, String name, List<Integer> relatedIds) {
-        this.id = id;
-        this.speed = speed;
-        this.name = name;
-        this.relatedIds = relatedIds;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public int getSpeed() {
-        return speed;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public List<Integer> getRelatedIds() {
-        return relatedIds;
-    }
-}
-
-@AllArgsConstructor
-//@Getter
-class CarV2 {
-    private final int id;
-    @Getter
-    private final int speed;
-    @Setter
-    @Getter
-    private String name;
-    private final List<Integer> relatedIds;
-}
