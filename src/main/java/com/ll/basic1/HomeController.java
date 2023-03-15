@@ -227,7 +227,8 @@ public class HomeController {
         // removed 에는 삭제수행여부가 저장된다.
         // 조건에 맞는걸 찾았고 삭제까지 되었다면 true, 아니면 false
         boolean removed = people.removeIf(person -> person.getId() == id);
-//        스트림 사용하지 않고 삭제
+
+        //        스트림 사용하지 않고 삭제하는 방법
 //        for ( Person p : people ) {
 //            if ( p.getId() == id ) people.remove(p);
 //        }
@@ -262,23 +263,23 @@ public class HomeController {
     @GetMapping("/home/cookie/increase")
     @ResponseBody
     public int showCookieIncrease(HttpServletRequest req, HttpServletResponse resp) throws IOException { // 리턴되는 int 값은 String 화 되어서 고객(브라우저)에게 전달된다.
-        int countInCookie = 0;
+//        int countInCookie = 0;
+//
+//        Cookie[] cookies = req.getCookies(); // request 객체에서 쿠키 객체를 얻어옴
+//        if (cookies != null) { // 쿠키 객체가 존재하면
+//            for (Cookie c : cookies) { // 쿠키객체들을 읽어서
+//                countInCookie = Integer.valueOf(c.getValue()); // 쿠키 객체의 value값을 읽어옴
+//            }
+//        } else { // 쿠키 없으면 0으로
+//            countInCookie = 0;
+//        }
+//
+//        int increasedValue = countInCookie + 1; // 쿠키로 얻어온 값을 증가시켜서
+//        resp.addCookie(new Cookie("value", increasedValue + "")); // 응답 객체의 쿠키 값을 변경
+//
+//        return increasedValue;
 
-        Cookie[] cookies = req.getCookies(); // request 객체에서 쿠키 객체를 얻어옴
-        if (cookies != null) { // 쿠키 객체가 존재하면
-            for (Cookie c : cookies) { // 쿠키객체들을 읽어서
-                countInCookie = Integer.valueOf(c.getValue()); // 쿠키 객체의 value값을 읽어옴
-            }
-        } else { // 쿠키 없으면 0으로
-            countInCookie = 0;
-        }
-
-        int increasedValue = countInCookie + 1; // 쿠키로 얻어온 값을 증가시켜서
-        resp.addCookie(new Cookie("value", increasedValue + "")); // 응답 객체의 쿠키 값을 변경
-
-        return increasedValue;
-
-
+//        강사님이 작성한 브라우저 별로 쿠키를 주어 카운트를 다르게 하기 실습
 //        // 고객이 가져온 쿠폰에서 count 쿠폰을 찾고 그 쿠폰의 값을 가져온다.
 //        if (req.getCookies() != null) {
 //            countInCookie = Arrays.stream(req.getCookies())
@@ -298,6 +299,28 @@ public class HomeController {
 //
 //        // 응답 본문
 //        return newCountInCookie;
+
+        // 다시 해보기
+
+        int cookieCount = 0;
+
+        Cookie[] cookies = req.getCookies(); // 쿠키를 얻어옴
+
+        if (cookies != null) { // 쿠키가 있다면
+            for (Cookie c : cookies) {
+                cookieCount = Integer.valueOf(c.getValue());
+            }
+        } else {
+            // null이면
+            cookieCount = 0;
+        }
+
+        int newCookieCount = cookieCount + 1;
+
+
+        resp.addCookie(new Cookie("value", String.valueOf(newCookieCount)));
+
+        return newCookieCount;
     }
 }
 
