@@ -28,8 +28,6 @@ public class HomeController {
     public HomeController() {
         this.id = 0;
         people = new ArrayList<>();
-        memberService = new MemberService();
-
     }
 
     // @GetMapping("/home/main") 의 의미
@@ -328,25 +326,6 @@ public class HomeController {
         resp.addCookie(new Cookie("value", String.valueOf(newCookieCount)));
 
         return newCookieCount;
-    }
-
-    @GetMapping("member/login")
-    @ResponseBody
-    public Map<String, String> showLogin(String username, String password) {
-        Map<String, String> map = new HashMap<>();
-
-        if (username.equals("user1") && password.equals("1234")) {
-            map.put("resultCode", "S-1");
-            map.put("msg", "user1님 환영합니다.");
-        } else if (!username.equals("user1")) {
-            map.put("resultCode", "F-2");
-            map.put("msg", "user2(은)는 존재하지 않는 회원입니다.");
-        } else if (!password.equals("1234")) {
-            map.put("resultCode", "F-1");
-            map.put("msg", "비밀번호가 일치하지 않습니다.");
-        }
-
-        return map;
     }
 }
 

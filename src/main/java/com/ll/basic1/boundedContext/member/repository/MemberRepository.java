@@ -1,19 +1,18 @@
 package com.ll.basic1.boundedContext.member.repository;
 
 import com.ll.basic1.boundedContext.member.entity.Member;
-import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@AllArgsConstructor
+@Repository
 public class MemberRepository {
-    List<Member> members;
+    private List<Member> members;
 
-    //리스트 초기화
     public MemberRepository() {
-        members = new ArrayList<>(); // 리스트를 초기화 해줌
-        // 생성자로 데이터 넣어주기
+        members = new ArrayList<>();
+
         members.add(new Member("user1", "1234"));
         members.add(new Member("abc", "12345"));
         members.add(new Member("test", "12346"));
@@ -29,8 +28,16 @@ public class MemberRepository {
     public Member findByUsername(String username) {
         return members
                 .stream()
-                .filter(m -> m.getUsername().equals(username)) // username과 같은 멤버객체를 필터
-                .findFirst() //처음 나온 것을 찾음
-                .orElse(null); // 없으면 null을 반환
+                .filter(m -> m.getUsername().equals(username))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public Member findById(long id) {
+        return members
+                .stream()
+                .filter(m -> m.getId() == id)
+                .findFirst()
+                .orElse(null);
     }
 }
