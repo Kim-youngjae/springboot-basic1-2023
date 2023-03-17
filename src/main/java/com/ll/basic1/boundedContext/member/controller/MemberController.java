@@ -1,32 +1,31 @@
 package com.ll.basic1.boundedContext.member.controller;
 
+import com.ll.basic1.base.rq.Rq;
 import com.ll.basic1.base.rsData.RsData;
 import com.ll.basic1.boundedContext.member.entity.Member;
 import com.ll.basic1.boundedContext.member.service.MemberService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.Arrays;
 
 
 @Controller
+@AllArgsConstructor
 public class MemberController {
     private final MemberService memberService;
+    private final Rq rq;
 
-    // 생성자 주입
-    @Autowired
-    public MemberController(MemberService memberService) {
-        this.memberService = memberService;
+    @GetMapping("/member/login") // 로그인을 위한 로그인 폼을 보여주기 위한 주소
+    public String showLogin() {
+        return "usr/member/login";
     }
 
-    @GetMapping("/member/login")
+    @PostMapping("/member/login") // 실제 로그인을 할 수 있는지의 여부를 체크 POST 방식이라 같은 경로라도 에러발생 안함
     @ResponseBody
-    public RsData login(String username, String password, HttpServletResponse resp) {
+    public RsData login(String username, String password) {
         if (username == null || username.trim().length() == 0) {
             return RsData.of("F-3", "username(을)를 입력해주세요.");
         }
@@ -35,11 +34,11 @@ public class MemberController {
             return RsData.of("F-4", "password(을)를 입력해주세요.");
         }
 
-        RsData rsData = memberService.tryLogin(username, password);
+        RsData rsData = memberService.tryLogin(username, password); // 실제 로그인을 시도하는 메서드
 
         if (rsData.isSuccess()) {
             Member member = (Member) rsData.getData();
-            resp.addCookie(new Cookie("loginedMemberId", member.getId() + ""));
+            rq.setSession("loginedMemberId", member.getId());
         }
 
         return rsData;
@@ -47,40 +46,42 @@ public class MemberController {
 
     @GetMapping("/member/logout")
     @ResponseBody
-    public RsData logout(HttpServletRequest req, HttpServletResponse resp) {
-        if (req.getCookies() != null) {
-            Arrays.stream(req.getCookies())
-                    .filter(cookie -> cookie.getName().equals("loginedMemberId"))
-                    .forEach(cookie -> {
-                        cookie.setMaxAge(0);
-                        resp.addCookie(cookie);
-                    });
+    public RsData logout() {
+        boolean cookieRemoved = rq.removeSession("loginedMemberId");
+
+        if (cookieRemoved == false) {
+            return RsData.of("S-2", "이미 로그아웃 상태입니다.");
         }
 
         return RsData.of("S-1", "로그아웃 되었습니다.");
     }
 
     @GetMapping("/member/me")
-    @ResponseBody
-    public RsData showMe(HttpServletRequest req) {
-        long loginedMemberId = 0;
-
-        if (req.getCookies() != null) {
-            loginedMemberId = Arrays.stream(req.getCookies())
-                    .filter(cookie -> cookie.getName().equals("loginedMemberId"))
-                    .map(Cookie::getValue)
-                    .mapToLong(Long::parseLong)
-                    .findFirst()
-                    .orElse(0);
-        }
-
-        boolean isLogined = loginedMemberId > 0;
-
-        if (isLogined == false)
-            return RsData.of("F-1", "로그인 후 이용해주세요.");
+    public String showMe(Model model) {
+        long loginedMemberId = rq.getLoginedMemberId();
 
         Member member = memberService.findById(loginedMemberId);
 
-        return RsData.of("S-1", "당신의 username(은)는 %s 입니다.".formatted(member.getUsername()));
+        model.addAttribute("member", member);
+
+        return "usr/member/me";
+
+//        long loginedMemberId = rq.getSessionAsLong("loginedMemberId", 0);
+//
+//        boolean isLogined = loginedMemberId > 0;
+//
+//        if (isLogined == false)
+//            return RsData.of("F-1", "로그인 후 이용해주세요.");
+//
+//        Member member = memberService.findById(loginedMemberId);
+//
+//        return RsData.of("S-1", "당신의 username(은)는 %s 입니다.".formatted(member.getUsername()));
+    }
+
+    // 디버깅용 함수
+    @GetMapping("/member/session")
+    @ResponseBody
+    public String showSession() {
+        return rq.getSessionDebugContents().replaceAll("\n", "<br>");
     }
 }

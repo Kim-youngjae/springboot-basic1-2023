@@ -36,7 +36,7 @@ public class HomeController {
     @GetMapping("/home/main")
     // @ResponseBody 의 의미
     // 아래 메서드를 실행한 후 그 리턴값을 응답으로 삼아줘
-    @ResponseBody
+    @ResponseBody // 리턴 값을 응답으로 가진다는 의미 응답의 결과는 브라우저 화면에 띄움
     public String showMain() {
         return "안녕하세요!!";
     }
@@ -49,7 +49,7 @@ public class HomeController {
         return "반갑습니다.";
     }
 
-    @GetMapping("/home/main3")
+    @GetMapping("/home/main3") // GetMapping의 경로가 같으면 오류가 발생
     // @ResponseBody 의 의미
     // 아래 메서드를 실행한 후 그 리턴값을 응답으로 삼아줘
     @ResponseBody
@@ -229,9 +229,9 @@ public class HomeController {
     public String removePerson(int id) {
         // person -> person.getId() == id
         // 위 함수가 참인 엘리먼트(요소) 경우가 존재하면, 해당 요소를 삭제한다.
-        // removed 에는 삭제수행여부가 저장된다.
+        // removed 에는 삭제수행 여부가 저장된다.
         // 조건에 맞는걸 찾았고 삭제까지 되었다면 true, 아니면 false
-        boolean removed = people.removeIf(person -> person.getId() == id);
+        boolean removed = people.removeIf(person -> person.getId() == id); // removeIf() people 리스트를 돌면서 같은 id를 찾고 찾으면 true반환
 
         //        스트림 사용하지 않고 삭제하는 방법
 //        for ( Person p : people ) {

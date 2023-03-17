@@ -30,7 +30,7 @@ public class MemberRepository {
                 .stream()
                 .filter(m -> m.getUsername().equals(username))
                 .findFirst()
-                .orElse(null);
+                .orElse(null); // 없으면 null을 반환
     }
 
     public Member findById(long id) {
