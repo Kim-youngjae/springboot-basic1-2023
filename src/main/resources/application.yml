@@ -14,8 +14,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3306/basic1__dev?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul # ?뒤는 일단 신경쓰지말자
-    username: kyj
-    password: kyj1234567890
+    username: root
+    password: 
   jpa:
     hibernate:
       ddl-auto: create # DB 테이블 자동생성(엔티티 클래스만 만들면 됨) 프로그램 시작 시마다 스키마 재생성
